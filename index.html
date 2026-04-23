@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Office Time Tracker</title>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            .wrap {
+                padding: 1.5rem 1rem;
+                font-family: var(--font-sans);
+                max-width: 520px;
+                margin: 0 auto;
+            }
+            .hero-header {
+                text-align: center;
+                padding: 1.5rem 1rem 1rem;
+                border-radius: 16px;
+                background: #534ab7;
+                margin-bottom: 1rem;
+            }
+            .hero-header .icon-ring {
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                background: #7f77dd;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 10px;
+            }
+            .hero-header h1 {
+                font-size: 20px;
+                font-weight: 500;
+                color: #eeedfe;
+                margin-bottom: 2px;
+            }
+            .hero-header p {
+                font-size: 13px;
+                color: #afa9ec;
+            }
+            .live-clock {
+                font-size: 28px;
+                font-weight: 500;
+                color: #eeedfe;
+                letter-spacing: 0.04em;
+                margin-top: 8px;
+            }
+
+            .section-label {
+                font-size: 11px;
+                font-weight: 500;
+                letter-spacing: 0.07em;
+                text-transform: uppercase;
+                color: var(--color-text-tertiary);
+                margin-bottom: 8px;
+            }
+
+            .goal-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+                margin-bottom: 1rem;
+            }
+            .goal-btn {
+                padding: 12px 4px;
+                font-size: 14px;
+                font-weight: 500;
+                border-radius: 10px;
+                border: 2px solid #cecbf6;
+                background: #eeedfe;
+                color: #3c3489;
+                cursor: pointer;
+                text-align: center;
+                transition:
+                    background 0.15s,
+                    border-color 0.15s;
+            }
+            .goal-btn:hover {
+                background: #cecbf6;
+            }
+            .goal-btn.sel {
+                background: #534ab7;
+                border-color: #534ab7;
+                color: #eeedfe;
+            }
+            .goal-sub {
+                font-size: 10px;
+                font-weight: 400;
+                color: #7f77dd;
+                display: block;
+            }
+            .goal-btn.sel .goal-sub {
+                color: #afa9ec;
+            }
+
+            .input-card {
+                background: var(--color-background-primary);
+                border: 0.5px solid var(--color-border-tertiary);
+                border-radius: 14px;
+                padding: 1.25rem;
+                margin-bottom: 1rem;
+            }
+            .time-row {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                margin-top: 6px;
+            }
+            .time-row input[type="time"] {
+                flex: 1;
+                font-size: 22px;
+                font-weight: 500;
+                padding: 10px 14px;
+                border-radius: 10px;
+                border: 2px solid #b5d4f4;
+                background: #e6f1fb;
+                color: #0c447c;
+            }
+            .btn-now {
+                padding: 10px 14px;
+                font-size: 13px;
+                font-weight: 500;
+                border-radius: 10px;
+                border: 2px solid #b5d4f4;
+                background: #e6f1fb;
+                color: #0c447c;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+            .btn-now:hover {
+                background: #b5d4f4;
+            }
+
+            .btn-start {
+                width: 100%;
+                margin-top: 12px;
+                padding: 14px;
+                font-size: 16px;
+                font-weight: 500;
+                border-radius: 12px;
+                border: none;
+                background: #1d9e75;
+                color: #e1f5ee;
+                cursor: pointer;
+                letter-spacing: 0.02em;
+            }
+            .btn-start:hover {
+                background: #0f6e56;
+            }
+            .btn-start:active {
+                transform: scale(0.98);
+            }
+
+            .stats-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-bottom: 1rem;
+            }
+            .stat-card {
+                border-radius: 12px;
+                padding: 14px 16px;
+                border: none;
+            }
+            .sc-blue {
+                background: #e6f1fb;
+            }
+            .sc-teal {
+                background: #e1f5ee;
+            }
+            .sc-amber {
+                background: #faeeda;
+            }
+            .sc-pink {
+                background: #fbeaf0;
+            }
+            .stat-card .slabel {
+                font-size: 12px;
+                font-weight: 500;
+                margin-bottom: 4px;
+            }
+            .sc-blue .slabel {
+                color: #185fa5;
+            }
+            .sc-teal .slabel {
+                color: #0f6e56;
+            }
+            .sc-amber .slabel {
+                color: #854f0b;
+            }
+            .sc-pink .slabel {
+                color: #993556;
+            }
+            .stat-card .sval {
+                font-size: 22px;
+                font-weight: 500;
+            }
+            .sc-blue .sval {
+                color: #0c447c;
+            }
+            .sc-teal .sval {
+                color: #085041;
+            }
+            .sc-amber .sval {
+                color: #633806;
+            }
+            .sc-pink .sval {
+                color: #72243e;
+            }
+
+            .progress-card {
+                background: var(--color-background-primary);
+                border: 0.5px solid var(--color-border-tertiary);
+                border-radius: 14px;
+                padding: 1.25rem;
+                margin-bottom: 1rem;
+            }
+            .progress-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .progress-pct {
+                font-size: 22px;
+                font-weight: 500;
+                color: #534ab7;
+            }
+            .pbar-bg {
+                height: 14px;
+                border-radius: 99px;
+                background: #eeedfe;
+                overflow: hidden;
+            }
+            .pbar-fill {
+                height: 100%;
+                border-radius: 99px;
+                background: #534ab7;
+                transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .milestones {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 6px;
+            }
+            .milestone {
+                font-size: 11px;
+                color: var(--color-text-tertiary);
+            }
+            .milestone.hit {
+                color: #534ab7;
+                font-weight: 500;
+            }
+
+            .status-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                font-size: 12px;
+                font-weight: 500;
+                padding: 4px 10px;
+                border-radius: 99px;
+            }
+            .pill-idle {
+                background: #f1efe8;
+                color: #5f5e5a;
+            }
+            .pill-active {
+                background: #e1f5ee;
+                color: #0f6e56;
+            }
+            .pill-done {
+                background: #eeedfe;
+                color: #3c3489;
+            }
+            .dot {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+            }
+            .dot-idle {
+                background: #888780;
+            }
+            .dot-active {
+                background: #1d9e75;
+            }
+            .dot-done {
+                background: #534ab7;
+            }
+
+            .alert-box {
+                border-radius: 12px;
+                padding: 14px 16px;
+                font-size: 14px;
+                font-weight: 500;
+                margin-bottom: 1rem;
+                display: none;
+                text-align: center;
+            }
+            .alert-success {
+                background: #e1f5ee;
+                color: #085041;
+                border: 1.5px solid #5dcaa5;
+            }
+            .alert-warn {
+                background: #faeeda;
+                color: #633806;
+                border: 1.5px solid #ef9f27;
+            }
+
+            .btn-reset {
+                width: 100%;
+                padding: 10px;
+                font-size: 14px;
+                border-radius: 10px;
+                border: 1.5px solid #f0997b;
+                background: #faece7;
+                color: #712b13;
+                cursor: pointer;
+                font-weight: 500;
+                margin-top: 4px;
+            }
+            .btn-reset:hover {
+                background: #f5c4b3;
+            }
+
+            .blink-overlay {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                z-index: 9999;
+                opacity: 0;
+                border-radius: 16px;
+                background: rgba(83, 74, 183, 0.22);
+            }
+            .confetti-bar {
+                height: 6px;
+                border-radius: 99px;
+                background: linear-gradient(90deg, #534ab7, #1d9e75, #d85a30, #d4537e, #ba7517);
+                margin-bottom: 1rem;
+                opacity: 0;
+                transition: opacity 0.4s;
+            }
+            .confetti-bar.show {
+                opacity: 1;
+            }
+            .sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+            }
+        </style>
+    </head>
+    <body>
+        <h2 class="sr-only">
+            Colorful office time tracker. Enter swipe-in time and get alerted when your required hours are done.
+        </h2>
+        <div style="position: relative">
+            <div class="blink-overlay" id="blinkOverlay"></div>
+
+            <div class="wrap">
+                <div class="hero-header">
+                    <div class="icon-ring">
+                        <svg
+                            width="28"
+                            height="28"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#EEEDFE"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                    </div>
+                    <h1>Office time tracker</h1>
+                    <p>Track your swipe-in &amp; know exactly when to leave</p>
+                    <div class="live-clock" id="liveClock">--:-- --</div>
+                </div>
+
+                <div class="confetti-bar" id="confettiBar"></div>
+
+                <div id="alertBox" class="alert-box"></div>
+
+                <div class="input-card">
+                    <p class="section-label">Required hours</p>
+                    <div class="goal-grid">
+                        <button class="goal-btn sel" data-h="4" data-label="Half day">
+                            4 hrs<span class="goal-sub">half day</span>
+                        </button>
+                        <button class="goal-btn" data-h="6" data-label="6 hrs">
+                            6 hrs<span class="goal-sub">short day</span>
+                        </button>
+                        <button class="goal-btn" data-h="8" data-label="8 hrs">
+                            8 hrs<span class="goal-sub">full day</span>
+                        </button>
+                        <button class="goal-btn" data-h="9" data-label="9 hrs">
+                            9 hrs<span class="goal-sub">long day</span>
+                        </button>
+                    </div>
+
+                    <p class="section-label" style="margin-top: 12px">Swipe-in time</p>
+                    <div class="time-row">
+                        <input type="time" id="swipeIn" />
+                        <button class="btn-now" onclick="setNow()">Now</button>
+                    </div>
+                    <button class="btn-start" id="startBtn" onclick="startTracking()">Start tracking</button>
+                </div>
+
+                <div id="liveSection" style="display: none">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px"
+                    >
+                        <p style="font-size: 14px; font-weight: 500; color: var(--color-text-primary)">Live status</p>
+                        <span class="status-pill pill-active" id="statusPill">
+                            <span class="dot dot-active" id="statusDot"></span>
+                            <span id="statusText">active</span>
+                        </span>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card sc-blue">
+                            <p class="slabel">Swipe-in</p>
+                            <p class="sval" id="swipeInDisplay">—</p>
+                        </div>
+                        <div class="stat-card sc-teal">
+                            <p class="slabel">Leave by</p>
+                            <p class="sval" id="leaveTime">—</p>
+                        </div>
+                        <div class="stat-card sc-amber">
+                            <p class="slabel">Elapsed</p>
+                            <p class="sval" id="elapsed">0h 00m</p>
+                        </div>
+                        <div class="stat-card sc-pink">
+                            <p class="slabel">Remaining</p>
+                            <p class="sval" id="remaining">—</p>
+                        </div>
+                    </div>
+
+                    <div class="progress-card">
+                        <div class="progress-top">
+                            <p style="font-size: 13px; color: var(--color-text-secondary)">
+                                Progress — <span id="goalLabel">4</span>h goal
+                            </p>
+                            <span class="progress-pct" id="pctLabel">0%</span>
+                        </div>
+                        <div class="pbar-bg"><div class="pbar-fill" id="progressFill" style="width: 0%"></div></div>
+                        <div class="milestones">
+                            <span class="milestone" id="m25">25%</span>
+                            <span class="milestone" id="m50">50%</span>
+                            <span class="milestone" id="m75">75%</span>
+                            <span class="milestone" id="m100">100%</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-reset" onclick="resetTracker()">Reset tracker</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let goalHours = 4,
+                trackInterval = null,
+                clockInterval = null,
+                alerted = false,
+                blinkInt = null,
+                swipeInTime = null,
+                blinkN = 0;
+
+            function fmt12(d) {
+                let h = d.getHours(),
+                    m = d.getMinutes(),
+                    a = h >= 12 ? "PM" : "AM";
+                h = h % 12 || 12;
+                return h + ":" + String(m).padStart(2, "0") + " " + a;
+            }
+            function fmtElapsed(ms) {
+                const t = Math.floor(ms / 60000),
+                    h = Math.floor(t / 60),
+                    m = t % 60;
+                return h + "h " + String(m).padStart(2, "0") + "m";
+            }
+
+            function tickClock() {
+                const now = new Date();
+                document.getElementById("liveClock").textContent = fmt12(now);
+            }
+            tickClock();
+            clockInterval = setInterval(tickClock, 1000);
+
+            document.querySelectorAll(".goal-btn").forEach((b) => {
+                b.addEventListener("click", function () {
+                    document.querySelectorAll(".goal-btn").forEach((x) => x.classList.remove("sel"));
+                    this.classList.add("sel");
+                    goalHours = parseInt(this.dataset.h);
+                });
+            });
+
+            function setNow() {
+                const n = new Date();
+                document.getElementById("swipeIn").value =
+                    String(n.getHours()).padStart(2, "0") + ":" + String(n.getMinutes()).padStart(2, "0");
+            }
+
+            function startTracking() {
+                const val = document.getElementById("swipeIn").value;
+                if (!val) {
+                    showAlert("Please enter your swipe-in time first.", "warn");
+                    return;
+                }
+                const [hh, mm] = val.split(":").map(Number);
+                const now = new Date();
+                swipeInTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0);
+                if (swipeInTime > now) swipeInTime.setDate(swipeInTime.getDate() - 1);
+                const leaveDate = new Date(swipeInTime.getTime() + goalHours * 3600000);
+                document.getElementById("swipeInDisplay").textContent = fmt12(swipeInTime);
+                document.getElementById("leaveTime").textContent = fmt12(leaveDate);
+                document.getElementById("goalLabel").textContent = goalHours;
+                document.getElementById("liveSection").style.display = "block";
+                document.getElementById("alertBox").style.display = "none";
+                document.getElementById("confettiBar").classList.remove("show");
+                setStatus("active");
+                alerted = false;
+                clearInterval(trackInterval);
+                trackInterval = setInterval(() => tick(leaveDate), 1000);
+                tick(leaveDate);
+            }
+
+            function tick(leaveDate) {
+                const now = new Date(),
+                    elapsed = now - swipeInTime,
+                    totalMs = goalHours * 3600000,
+                    remaining = leaveDate - now;
+                const pct = Math.min(100, Math.round((elapsed / totalMs) * 100));
+                document.getElementById("elapsed").textContent = fmtElapsed(elapsed);
+                document.getElementById("progressFill").style.width = pct + "%";
+                document.getElementById("pctLabel").textContent = pct + "%";
+                ["m25", "m50", "m75", "m100"].forEach((id, i) => {
+                    document.getElementById(id).className = "milestone" + (pct >= (i + 1) * 25 ? " hit" : "");
+                });
+                if (remaining > 0) {
+                    document.getElementById("remaining").textContent = fmtElapsed(remaining);
+                } else {
+                    document.getElementById("remaining").textContent = "Done!";
+                    if (!alerted) {
+                        alerted = true;
+                        clearInterval(trackInterval);
+                        setStatus("done");
+                        showAlert("Time complete! You can head home now. Great work today!", "success");
+                        document.getElementById("confettiBar").classList.add("show");
+                        playChime();
+                        startBlink();
+                    }
+                }
+            }
+
+            function setStatus(s) {
+                const pill = document.getElementById("statusPill"),
+                    dot = document.getElementById("statusDot"),
+                    txt = document.getElementById("statusText");
+                pill.className = "status-pill pill-" + s;
+                dot.className = "dot dot-" + s;
+                txt.textContent = s;
+            }
+
+            function showAlert(msg, type) {
+                const b = document.getElementById("alertBox");
+                b.className = "alert-box alert-" + type;
+                b.textContent = msg;
+                b.style.display = "block";
+            }
+
+            function playChime() {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    [
+                        [523, 0],
+                        [659, 0.2],
+                        [784, 0.4],
+                        [1047, 0.6],
+                        [784, 0.85],
+                        [1047, 1.1],
+                    ].forEach(([f, t]) => {
+                        const o = ctx.createOscillator(),
+                            g = ctx.createGain();
+                        o.connect(g);
+                        g.connect(ctx.destination);
+                        o.frequency.value = f;
+                        o.type = "sine";
+                        const s = ctx.currentTime + t;
+                        g.gain.setValueAtTime(0.28, s);
+                        g.gain.exponentialRampToValueAtTime(0.001, s + 0.4);
+                        o.start(s);
+                        o.stop(s + 0.45);
+                    });
+                } catch (e) {}
+            }
+
+            function startBlink() {
+                const ov = document.getElementById("blinkOverlay");
+                blinkN = 0;
+                clearInterval(blinkInt);
+                blinkInt = setInterval(() => {
+                    ov.style.opacity = blinkN % 2 === 0 ? "1" : "0";
+                    blinkN++;
+                    if (blinkN > 12) {
+                        clearInterval(blinkInt);
+                        ov.style.opacity = "0";
+                    }
+                }, 300);
+            }
+
+            function resetTracker() {
+                clearInterval(trackInterval);
+                clearInterval(blinkInt);
+                document.getElementById("blinkOverlay").style.opacity = "0";
+                document.getElementById("liveSection").style.display = "none";
+                document.getElementById("alertBox").style.display = "none";
+                document.getElementById("confettiBar").classList.remove("show");
+                document.getElementById("swipeIn").value = "";
+                document.getElementById("progressFill").style.width = "0%";
+                document.getElementById("pctLabel").textContent = "0%";
+                swipeInTime = null;
+                alerted = false;
+            }
+
+            setNow();
+        </script>
+    </body>
+</html>
