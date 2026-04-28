@@ -558,8 +558,11 @@
                 });
                 if (remaining > 0) {
                     document.getElementById("remaining").textContent = fmtElapsed(remaining);
+                    // Update the tab title with remaining time
+                    document.title = fmtElapsed(remaining) + " left - Office Time Tracker";
                 } else {
                     document.getElementById("remaining").textContent = "Done!";
+                    document.title = "Done! - Office Time Tracker";
                     if (!alerted) {
                         alerted = true;
                         clearInterval(trackInterval);
@@ -640,6 +643,8 @@
                 document.getElementById("pctLabel").textContent = "0%";
                 swipeInTime = null;
                 alerted = false;
+                // Reset the tab title
+                document.title = "Office Time Tracker";
             }
 
             setNow();
